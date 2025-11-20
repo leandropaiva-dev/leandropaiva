@@ -1,0 +1,34 @@
+{
+  "hero": {
+    "badge": "DESENVOLVEDOR FRONT-END",
+    "title": "Criando experiências web premium",
+    "description": "Especializado em Next.js, TypeScript e desenvolvimento web moderno. Construindo aplicações escaláveis com atenção aos detalhes e performance.",
+    "viewWork": "Ver Trabalhos",
+    "getInTouch": "Entrar em Contato",
+    "scroll": "ROLAR"
+  },
+  "nav": {
+    "services": "Serviços",
+    "products": "Produtos",
+    "about": "Sobre",
+    "contact": "Contato",
+    "webDev": "Desenvolvimento Web",
+    "mobileDev": "Desenvolvimento Mobile",
+    "uiDesign": "Design UI/UX",
+    "consulting": "Consultoria",
+    "webProjects": "Projetos Web",
+    "mobileApps": "Apps Mobile",
+    "ecommerce": "E-commerce",
+    "portfolios": "Portfólios",
+    "landingPages": "Landing Pages",
+    "iosApps": "iOS Apps",
+    "androidApps": "Android Apps",
+    "hybridApps": "Apps Híbridos",
+    "ourStory": "Nossa História",
+    "team": "Equipe",
+    "careers": "Carreiras",
+    "contactUs": "Fale Conosco",
+    "support": "Suporte",
+    "partnerships": "Parcerias"
+  }
+}
