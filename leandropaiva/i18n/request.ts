@@ -1,13 +1,18 @@
 import {notFound} from 'next/navigation';
 import {getRequestConfig} from 'next-intl/server';
 
-const locales = ['pt', 'en', 'es'];
+const locales = ['pt', 'en', 'es'] as const;
 
-// @ts-ignore
 export default getRequestConfig(async ({locale}) => {
-  if (!locales.includes(locale)) notFound();
+  // Validate locale
+  if (!locale || !locales.includes(locale as any)) {
+    notFound();
+  }
+
+  const validatedLocale = locale as string;
 
   return {
-    messages: (await import(`../messages/${locale}.json`)).default
+    locale: validatedLocale,
+    messages: (await import(`../messages/${validatedLocale}.json`)).default
   };
 });
