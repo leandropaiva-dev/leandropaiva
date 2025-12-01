@@ -1,5 +1,12 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Design System Rules
+
+### Layout Constraints
+**IMPORTANT**: All page content must use a maximum width of **10/12** (83.33%) of the viewport.
+
+This ensures consistent spacing and professional layout across all pages.
+
 ## Getting Started
 
 First, run the development server:
