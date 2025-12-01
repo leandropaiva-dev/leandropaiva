@@ -1,8 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { motion } from "motion/react";
-import { useRouter, usePathname } from 'next/navigation';
-import { useLocale } from 'next-intl';
+import { useRouter, useParams } from 'next/navigation';
 
 interface Language {
   code: string;
@@ -18,20 +17,16 @@ const languages: Language[] = [
 
 export const LanguageSwitcher = () => {
   const router = useRouter();
-  const pathname = usePathname();
-  const locale = useLocale();
+  const params = useParams();
+  const locale = (params.locale as string) || 'pt';
   const [isOpen, setIsOpen] = useState(false);
 
   const currentLang = languages.find(lang => lang.code === locale) || languages[0];
 
   const handleLanguageChange = (language: Language) => {
     setIsOpen(false);
-
-    // Get the path without the current locale
-    const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/';
-
-    // Navigate to the new locale
-    router.push(`/${language.code}${pathWithoutLocale}`);
+    // Simple navigation to new locale
+    router.push(`/${language.code}`);
   };
 
   return (
