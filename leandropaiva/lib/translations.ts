@@ -128,6 +128,37 @@ export const translations = {
       contactUs: "Fale Conosco",
       support: "Suporte",
       partnerships: "Parcerias"
+    },
+    contact: {
+      title: "Available for opportunities",
+      subtitle: "Currently seeking front-end developer positions where I can contribute to innovative projects and continue growing professionally.",
+      location: "Porto, Portugal",
+      form: {
+        name: "NAME",
+        namePlaceholder: "Your name",
+        email: "EMAIL",
+        emailPlaceholder: "your@email.com",
+        subject: "SUBJECT",
+        subjectPlaceholder: "What's this about?",
+        message: "MESSAGE",
+        messagePlaceholder: "Tell me more...",
+        send: "Send Message",
+        sending: "Sending...",
+        success: "Message sent successfully!",
+        error: "Error sending message. Please try again."
+      }
+    },
+    blog: {
+      badge: "Blog",
+      title: "Últimas Notícias",
+      subtitle: "Pensamentos, insights e aprendizados da minha jornada no desenvolvimento web.",
+      readMore: "Ler Mais"
+    },
+    footer: {
+      description: "Desenvolvedor Front-end especializado em criar experiências web modernas com Next.js, React e TypeScript.",
+      rights: "Todos os direitos reservados.",
+      links: "Links Rápidos",
+      connect: "Conecte-se"
     }
   },
   en: {
@@ -258,6 +289,37 @@ export const translations = {
       contactUs: "Contact Us",
       support: "Support",
       partnerships: "Partnerships"
+    },
+    contact: {
+      title: "Available for opportunities",
+      subtitle: "Currently seeking front-end developer positions where I can contribute to innovative projects and continue growing professionally.",
+      location: "Porto, Portugal",
+      form: {
+        name: "NAME",
+        namePlaceholder: "Your name",
+        email: "EMAIL",
+        emailPlaceholder: "your@email.com",
+        subject: "SUBJECT",
+        subjectPlaceholder: "What's this about?",
+        message: "MESSAGE",
+        messagePlaceholder: "Tell me more...",
+        send: "Send Message",
+        sending: "Sending...",
+        success: "Message sent successfully!",
+        error: "Error sending message. Please try again."
+      }
+    },
+    blog: {
+      badge: "Blog",
+      title: "Latest Articles",
+      subtitle: "Thoughts, insights, and learnings from my journey in web development.",
+      readMore: "Read More"
+    },
+    footer: {
+      description: "Front-end Developer specialized in creating modern web experiences with Next.js, React, and TypeScript.",
+      rights: "All rights reserved.",
+      links: "Quick Links",
+      connect: "Connect"
     }
   },
   es: {
@@ -388,6 +450,37 @@ export const translations = {
       contactUs: "Contáctanos",
       support: "Soporte",
       partnerships: "Alianzas"
+    },
+    contact: {
+      title: "Disponible para oportunidades",
+      subtitle: "Actualmente buscando posiciones de desarrollador front-end donde pueda contribuir a proyectos innovadores y continuar creciendo profesionalmente.",
+      location: "Porto, Portugal",
+      form: {
+        name: "NOMBRE",
+        namePlaceholder: "Tu nombre",
+        email: "EMAIL",
+        emailPlaceholder: "tu@email.com",
+        subject: "ASUNTO",
+        subjectPlaceholder: "¿De qué se trata?",
+        message: "MENSAJE",
+        messagePlaceholder: "Cuéntame más...",
+        send: "Enviar Mensaje",
+        sending: "Enviando...",
+        success: "¡Mensaje enviado con éxito!",
+        error: "Error al enviar mensaje. Inténtalo de nuevo."
+      }
+    },
+    blog: {
+      badge: "Blog",
+      title: "Últimos Artículos",
+      subtitle: "Pensamientos, insights y aprendizajes de mi viaje en el desarrollo web.",
+      readMore: "Leer Más"
+    },
+    footer: {
+      description: "Desarrollador Front-end especializado en crear experiencias web modernas con Next.js, React y TypeScript.",
+      rights: "Todos los derechos reservados.",
+      links: "Enlaces Rápidos",
+      connect: "Conectar"
     }
   }
 } as const;

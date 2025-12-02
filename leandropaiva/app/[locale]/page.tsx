@@ -9,6 +9,7 @@ import { cn } from '../../lib/utils';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../../components/ui/carousel';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -31,9 +32,12 @@ const Circle = forwardRef<
 
 Circle.displayName = "Circle"
 
-function HorizontalScrollSection({ workT }: { workT: any }) {
+function HorizontalScrollSection({ workT, navT }: { workT: any; navT: any }) {
   const sectionRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLDivElement>(null)
+  const [isMobile, setIsMobile] = useState(false)
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [api, setApi] = useState<any>()
 
   const projectTags = [
     ["Next.js 14", "TypeScript", "Tailwind CSS", "Supabase", "Stripe"],
@@ -41,7 +45,6 @@ function HorizontalScrollSection({ workT }: { workT: any }) {
     ["Next.js", "Framer Motion", "Tailwind"]
   ]
 
-  // ✅ CORREÇÃO 1: tipar "project" explicitamente (any)
   const projects = workT.projects.map((project: any, index: number) => ({
     id: index + 1,
     title: project.title,
@@ -59,6 +62,19 @@ function HorizontalScrollSection({ workT }: { workT: any }) {
   }))
 
   useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  useEffect(() => {
+    if (isMobile) return // Não aplica scroll horizontal no mobile
+
     const section = sectionRef.current
     const trigger = triggerRef.current
 
@@ -83,52 +99,127 @@ function HorizontalScrollSection({ workT }: { workT: any }) {
     return () => {
       scrollTriggerInstance.kill()
     }
-  }, [])
+  }, [isMobile])
 
+  // Mobile Carousel
+  if (isMobile) {
+    return (
+      <div className="relative bg-black py-12 px-4">
+        <Carousel className="w-full max-w-sm mx-auto">
+          <CarouselContent>
+            {projects.map((project: any) => (
+              <CarouselItem key={project.id}>
+                <div className="flex flex-col space-y-6 py-8">
+                  {/* Image/Preview */}
+                  <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-br from-purple-600/20 to-blue-600/20">
+                    <div className="absolute inset-0 flex items-center justify-center text-white/30 text-xs text-center px-4">
+                      {project.title} Preview<br />
+                      Video/GIF on Hover
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex flex-col space-y-4">
+                    <h3 className="text-3xl font-bold text-white">
+                      {project.title}
+                    </h3>
+
+                    <p className="text-base text-white/70 leading-relaxed">
+                      {project.description}
+                    </p>
+
+                    {/* Metadata */}
+                    <div className="space-y-2 text-xs">
+                      <div className="flex items-center gap-3">
+                        <span className="text-white/40 uppercase tracking-wider min-w-[80px]">{workT.metadata.role}</span>
+                        <span className="text-white/80">{project.role}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-white/40 uppercase tracking-wider min-w-[80px]">{workT.metadata.timeline}</span>
+                        <span className="text-white/80">{project.timeline}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-white/40 uppercase tracking-wider min-w-[80px]">{workT.metadata.year}</span>
+                        <span className="text-white/80">{project.year}</span>
+                      </div>
+                    </div>
+
+                    {/* Tags */}
+                    <div className="flex gap-2 flex-wrap">
+                      {project.tags.map((tag: string) => (
+                        <span
+                          key={tag}
+                          className="px-2 py-1 text-xs rounded-full bg-white/5 border border-white/10 text-white/70"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* CTA Buttons */}
+                    <div className="flex flex-col gap-3 pt-3">
+                      <a href={project.links.live} className="px-5 py-2.5 bg-white text-black font-medium rounded-full hover:bg-white/90 transition-colors text-center text-sm">
+                        {project.viewLive}
+                      </a>
+                      <a href={project.links.code} className="px-5 py-2.5 border border-white/30 text-white font-medium rounded-full hover:bg-white/10 transition-colors text-center text-sm">
+                        {project.viewCode}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="left-0" />
+          <CarouselNext className="right-0" />
+        </Carousel>
+      </div>
+    )
+  }
+
+  // Desktop Horizontal Scroll
   return (
     <div ref={triggerRef} className="relative bg-black">
-      <div className="h-screen sticky top-0 overflow-hidden">
-        <div ref={sectionRef} className="flex h-screen items-center">
-          {/* Projects */}
+      <div className="min-h-screen sticky top-0 overflow-hidden flex items-center">
+        <div ref={sectionRef} className="flex items-center">
           {projects.map((project: any) => (
             <div
               key={project.id}
-              className="flex-shrink-0 w-screen h-screen flex items-center px-[5vw]"
+              className="flex-shrink-0 w-screen flex items-center justify-center px-4 lg:px-8 py-16"
             >
-              <div className="w-full md:w-10/12 mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              <div className="w-full lg:w-10/12 mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-12">
                 {/* Left Side - Info */}
-                <div className="flex flex-col justify-center space-y-4 md:space-y-6">
-                  <h3 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white">
+                <div className="flex flex-col justify-center space-y-6 lg:space-y-8">
+                  <h3 className="text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold text-white leading-tight">
                     {project.title}
                   </h3>
 
-                  <p className="text-base md:text-lg text-white/70 leading-relaxed">
+                  <p className="text-lg lg:text-xl xl:text-2xl text-white/70 leading-relaxed">
                     {project.description}
                   </p>
 
                   {/* Metadata */}
-                  <div className="space-y-2 md:space-y-3 text-xs md:text-sm">
-                    <div className="flex items-center gap-3 md:gap-4">
-                      <span className="text-white/40 uppercase tracking-wider min-w-[80px] md:min-w-[100px]">{workT.metadata.role}</span>
+                  <div className="space-y-3 text-sm lg:text-base">
+                    <div className="flex items-center gap-4">
+                      <span className="text-white/40 uppercase tracking-wider min-w-[100px] lg:min-w-[120px]">{workT.metadata.role}</span>
                       <span className="text-white/80">{project.role}</span>
                     </div>
-                    <div className="flex items-center gap-3 md:gap-4">
-                      <span className="text-white/40 uppercase tracking-wider min-w-[80px] md:min-w-[100px]">{workT.metadata.timeline}</span>
+                    <div className="flex items-center gap-4">
+                      <span className="text-white/40 uppercase tracking-wider min-w-[100px] lg:min-w-[120px]">{workT.metadata.timeline}</span>
                       <span className="text-white/80">{project.timeline}</span>
                     </div>
-                    <div className="flex items-center gap-3 md:gap-4">
-                      <span className="text-white/40 uppercase tracking-wider min-w-[80px] md:min-w-[100px]">{workT.metadata.year}</span>
+                    <div className="flex items-center gap-4">
+                      <span className="text-white/40 uppercase tracking-wider min-w-[100px] lg:min-w-[120px]">{workT.metadata.year}</span>
                       <span className="text-white/80">{project.year}</span>
                     </div>
                   </div>
 
                   {/* Tags */}
                   <div className="flex gap-2 flex-wrap">
-                    {/* ✅ CORREÇÃO 2: tipar "tag" explicitamente (string) */}
                     {project.tags.map((tag: string) => (
                       <span
                         key={tag}
-                        className="px-2 md:px-3 py-1 md:py-1.5 text-xs rounded-full bg-white/5 border border-white/10 text-white/70"
+                        className="px-3 lg:px-4 py-1.5 lg:py-2 text-xs lg:text-sm rounded-full bg-white/5 border border-white/10 text-white/70"
                       >
                         {tag}
                       </span>
@@ -136,24 +227,23 @@ function HorizontalScrollSection({ workT }: { workT: any }) {
                   </div>
 
                   {/* CTA Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-3 md:pt-4">
-                    <a href={project.links.live} className="px-5 md:px-6 py-2.5 md:py-3 bg-white text-black font-medium rounded-full hover:bg-white/90 transition-colors text-center text-sm md:text-base">
+                  <div className="flex gap-4 pt-4">
+                    <a href={project.links.live} target="_blank" rel="noopener noreferrer" className="px-6 lg:px-8 py-3 lg:py-4 bg-white text-black font-medium rounded-full hover:bg-white/90 transition-colors text-center text-sm lg:text-base">
                       {project.viewLive}
                     </a>
-                    <a href={project.links.code} className="px-5 md:px-6 py-2.5 md:py-3 border border-white/30 text-white font-medium rounded-full hover:bg-white/10 transition-colors text-center text-sm md:text-base">
-                      {project.viewCode}
+                    <a href="#contact" className="px-6 lg:px-8 py-3 lg:py-4 border border-white/30 text-white font-medium rounded-full hover:bg-white/10 transition-colors text-center text-sm lg:text-base">
+                      {navT.contact}
                     </a>
                   </div>
                 </div>
 
                 {/* Right Side - Image/Preview */}
-                <div className="flex items-center justify-center mt-6 md:mt-0">
+                <div className="flex items-center justify-center">
                   <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-br from-purple-600/20 to-blue-600/20 hover:border-white/20 transition-all duration-300">
-                    <div className="absolute inset-0 flex items-center justify-center text-white/30 text-xs md:text-sm text-center px-4">
+                    <div className="absolute inset-0 flex items-center justify-center text-white/30 text-sm text-center px-4">
                       {project.title} Preview<br />
                       Video/GIF on Hover
                     </div>
-                    {/* Placeholder - Replace with actual image/video */}
                   </div>
                 </div>
               </div>
@@ -203,10 +293,10 @@ function TechStackBeam() {
       ref={containerRef}
       className="relative flex w-full items-center justify-center overflow-hidden py-16 md:py-24"
     >
-      <div className="relative w-full max-w-4xl aspect-[2/1]">
+      <div className="relative w-full max-w-lg md:max-w-4xl aspect-square md:aspect-[2/1]">
         {/* Center - Your Photo */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-          <Circle ref={centerRef} className="size-28 md:size-36 border-4 border-purple-500/50">
+          <Circle ref={centerRef} className="size-24 md:size-28 lg:size-36 border-4 border-purple-500/50">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-full"></div>
             <div className="absolute inset-0 flex items-center justify-center text-white/40 text-xs">
               Foto
@@ -214,11 +304,11 @@ function TechStackBeam() {
           </Circle>
         </div>
 
-        {/* Technologies in Ellipse/Oval */}
+        {/* Technologies in Circle (mobile) or Ellipse (desktop) */}
         {technologies.map((tech, index) => {
           const angle = (index * 360) / technologies.length - 90 // Start from top
           const radiusX = 40 // horizontal radius percentage
-          const radiusY = 35 // vertical radius percentage
+          const radiusY = window.innerWidth < 768 ? 40 : 35 // Circle on mobile, ellipse on desktop
           const x = 50 + radiusX * Math.cos((angle * Math.PI) / 180)
           const y = 50 + radiusY * Math.sin((angle * Math.PI) / 180)
 
@@ -232,8 +322,8 @@ function TechStackBeam() {
                 transform: 'translate(-50%, -50%)'
               }}
             >
-              <Circle ref={tech.ref} className="size-16 md:size-20">
-                <div className="w-10 h-10 md:w-12 md:h-12">{tech.icon}</div>
+              <Circle ref={tech.ref} className="size-14 md:size-16 lg:size-20">
+                <div className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12">{tech.icon}</div>
               </Circle>
             </div>
           )
@@ -267,7 +357,59 @@ export default function Home() {
   const workT = translations.work;
   const experienceT = translations.experience;
   const navT = translations.nav;
+  const contactT = translations.contact;
+  const blogT = translations.blog;
+  const footerT = translations.footer;
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
+  const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState(true);
+  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  // Fetch WordPress posts
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch('https://public-api.wordpress.com/wp/v2/sites/leandropaivavercel.wordpress.com/posts?per_page=3');
+        const data = await response.json();
+        setBlogPosts(data);
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+      } finally {
+        setLoadingPosts(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <>
@@ -437,7 +579,7 @@ export default function Home() {
       </section>
 
       {/* Featured Work Section - Horizontal Scroll */}
-      <HorizontalScrollSection workT={workT} />
+      <HorizontalScrollSection workT={workT} navT={navT} />
 
       {/* Experience Timeline Section */}
       <section className="w-full bg-black py-16 md:py-20 px-4 md:px-8">
@@ -560,6 +702,373 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="w-full bg-black py-16 md:py-24 px-4 md:px-8">
+        <div className="w-full lg:w-10/12 mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+            {/* Left Side - Contact Info */}
+            <div className="flex flex-col justify-start space-y-8">
+              <div>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+                  {contactT.title}
+                </h2>
+                <p className="text-base md:text-lg text-white/60 leading-relaxed">
+                  {contactT.subtitle}
+                </p>
+              </div>
+
+              {/* Contact Links */}
+              <div className="space-y-4">
+                {/* Email */}
+                <a
+                  href="mailto:leandro.works@outlook.com"
+                  className="flex items-center gap-4 text-white/80 hover:text-white transition-colors group"
+                >
+                  <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/10 transition-all">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <span className="text-sm md:text-base">leandro.works@outlook.com</span>
+                </a>
+
+                {/* LinkedIn */}
+                <a
+                  href="https://www.linkedin.com/in/l-paiva/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-4 text-white/80 hover:text-white transition-colors group"
+                >
+                  <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/10 transition-all">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                  </div>
+                  <span className="text-sm md:text-base">linkedin.com/in/l-paiva</span>
+                </a>
+
+                {/* GitHub */}
+                <a
+                  href="https://github.com/leandropaiva-dev"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-4 text-white/80 hover:text-white transition-colors group"
+                >
+                  <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/10 transition-all">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span className="text-sm md:text-base">github.com/leandropaiva-dev</span>
+                </a>
+
+                {/* Location */}
+                <div className="flex items-center gap-4 text-white/80">
+                  <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <span className="text-sm md:text-base">{contactT.location}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Side - Contact Form */}
+            <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-6 md:p-8">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Name Input */}
+                <div>
+                  <label htmlFor="name" className="block text-xs font-medium text-white/60 mb-2 tracking-wider">
+                    {contactT.form.name}
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder={contactT.form.namePlaceholder}
+                    required
+                    className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white placeholder:text-white/30 focus:outline-none focus:border-white/40 transition-all"
+                  />
+                </div>
+
+                {/* Email Input */}
+                <div>
+                  <label htmlFor="email" className="block text-xs font-medium text-white/60 mb-2 tracking-wider">
+                    {contactT.form.email}
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder={contactT.form.emailPlaceholder}
+                    required
+                    className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white placeholder:text-white/30 focus:outline-none focus:border-white/40 transition-all"
+                  />
+                </div>
+
+                {/* Subject Input */}
+                <div>
+                  <label htmlFor="subject" className="block text-xs font-medium text-white/60 mb-2 tracking-wider">
+                    {contactT.form.subject}
+                  </label>
+                  <input
+                    type="text"
+                    id="subject"
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    placeholder={contactT.form.subjectPlaceholder}
+                    required
+                    className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white placeholder:text-white/30 focus:outline-none focus:border-white/40 transition-all"
+                  />
+                </div>
+
+                {/* Message Textarea */}
+                <div>
+                  <label htmlFor="message" className="block text-xs font-medium text-white/60 mb-2 tracking-wider">
+                    {contactT.form.message}
+                  </label>
+                  <textarea
+                    id="message"
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    placeholder={contactT.form.messagePlaceholder}
+                    required
+                    rows={4}
+                    className="w-full px-0 py-3 bg-transparent border-b border-white/20 text-white placeholder:text-white/30 focus:outline-none focus:border-white/40 transition-all resize-none"
+                  />
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full px-6 py-4 bg-white text-black font-medium rounded-full hover:bg-white/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                >
+                  {isSubmitting ? contactT.form.sending : contactT.form.send}
+                </button>
+
+                {/* Status Messages */}
+                {submitStatus === 'success' && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-green-400 text-center text-sm"
+                  >
+                    {contactT.form.success}
+                  </motion.p>
+                )}
+                {submitStatus === 'error' && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-red-400 text-center text-sm"
+                  >
+                    {contactT.form.error}
+                  </motion.p>
+                )}
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Blog Section */}
+      <section className="w-full bg-black py-16 md:py-24 px-4 md:px-8">
+        <div className="w-full lg:w-10/12 mx-auto">
+          {/* Header */}
+          <div className="mb-10 md:mb-12">
+            <span className="inline-block px-3 md:px-4 py-1 md:py-1.5 text-xs font-medium tracking-widest uppercase border border-white/20 rounded-full bg-white/5 backdrop-blur-sm text-white/80 mb-4 md:mb-6">
+              {blogT.badge}
+            </span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 md:mb-4">
+              {blogT.title}
+            </h2>
+            <p className="text-base md:text-lg text-white/60 max-w-3xl">
+              {blogT.subtitle}
+            </p>
+          </div>
+
+          {/* Blog Grid */}
+          {loadingPosts ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6 animate-pulse">
+                  <div className="w-full aspect-video bg-white/10 rounded-lg mb-4"></div>
+                  <div className="h-4 bg-white/10 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-white/10 rounded w-full mb-1"></div>
+                  <div className="h-3 bg-white/10 rounded w-5/6"></div>
+                </div>
+              ))}
+            </div>
+          ) : blogPosts.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {blogPosts.map((post: any) => (
+                <a
+                  key={post.id}
+                  href={post.URL || post.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:bg-white/[0.05] hover:border-white/20 transition-all duration-300 flex flex-col h-full"
+                >
+                  {/* Featured Image - 16:9 aspect ratio */}
+                  <div className="relative w-full aspect-video overflow-hidden flex-shrink-0">
+                    {(post.jetpack_featured_media_url || post.featured_image) ? (
+                      <img
+                        src={post.jetpack_featured_media_url || post.featured_image}
+                        alt={post.title?.rendered || post.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-purple-600/20 to-blue-600/20" />
+                    )}
+                  </div>
+
+                  <div className="p-6 flex flex-col flex-grow">
+                    {/* Date */}
+                    <p className="text-xs text-white/40 uppercase tracking-wider mb-3">
+                      {new Date(post.date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </p>
+
+                    {/* Title */}
+                    <h3 className="text-lg md:text-xl font-bold text-white mb-3 group-hover:text-purple-400 transition-colors line-clamp-2">
+                      {post.title?.rendered || post.title}
+                    </h3>
+
+                    {/* Excerpt */}
+                    <div className="text-sm text-white/60 leading-relaxed line-clamp-3 mb-4 flex-grow">
+                      {post.excerpt && typeof post.excerpt === 'string'
+                        ? post.excerpt.replace(/<[^>]*>/g, '').substring(0, 150) + '...'
+                        : 'Read more about this article...'}
+                    </div>
+
+                    {/* Read More */}
+                    <span className="text-sm text-purple-400 font-medium group-hover:text-purple-300 transition-colors mt-auto">
+                      {blogT.readMore} →
+                    </span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-white/40 py-12">
+              No posts found
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="w-full bg-black border-t border-white/10 py-12 md:py-16 px-4 md:px-8">
+        <div className="w-full lg:w-10/12 mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-12">
+            {/* Brand & Description */}
+            <div className="lg:col-span-2">
+              <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                Leandro Paiva
+              </h3>
+              <p className="text-sm md:text-base text-white/60 leading-relaxed mb-6">
+                {footerT.description}
+              </p>
+              <div className="flex gap-4">
+                <a
+                  href="mailto:leandro.works@outlook.com"
+                  className="w-10 h-10 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all"
+                  aria-label="Email"
+                >
+                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/l-paiva/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all"
+                  aria-label="LinkedIn"
+                >
+                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                </a>
+                <a
+                  href="https://github.com/leandropaiva-dev"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all"
+                  aria-label="GitHub"
+                >
+                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+                {footerT.links}
+              </h4>
+              <ul className="space-y-3">
+                <li>
+                  <a href="#about" className="text-sm text-white/60 hover:text-white transition-colors">
+                    {navT.about}
+                  </a>
+                </li>
+                <li>
+                  <a href="#work" className="text-sm text-white/60 hover:text-white transition-colors">
+                    {navT.products}
+                  </a>
+                </li>
+                <li>
+                  <a href="#experience" className="text-sm text-white/60 hover:text-white transition-colors">
+                    {navT.services}
+                  </a>
+                </li>
+                <li>
+                  <a href="#contact" className="text-sm text-white/60 hover:text-white transition-colors">
+                    {navT.contact}
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Location */}
+            <div>
+              <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+                {footerT.connect}
+              </h4>
+              <div className="space-y-3">
+                <p className="text-sm text-white/60">
+                  Porto, Portugal
+                </p>
+                <a href="mailto:leandro.works@outlook.com" className="text-sm text-white/60 hover:text-white transition-colors block">
+                  leandro.works@outlook.com
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-xs md:text-sm text-white/40">
+              © {new Date().getFullYear()} Leandro Paiva. {footerT.rights}
+            </p>
+            <p className="text-xs md:text-sm text-white/40">
+              Made with ❤️ in Portugal
+            </p>
+          </div>
+        </div>
+      </footer>
     </>
   );
 }
