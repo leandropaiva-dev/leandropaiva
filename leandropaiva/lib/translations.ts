@@ -25,9 +25,9 @@ export const translations = {
       subtitle: "Ferramentas e tecnologias que uso para construir experiências digitais"
     },
     work: {
-      badge: "Selected Work",
-      title: "Featured Projects",
-      subtitle: "A collection of projects showcasing expertise in modern web development, from SaaS platforms to content-driven applications.",
+      badge: "Trabalhos Selecionados",
+      title: "Projetos em Destaque",
+      subtitle: "Uma coleção de projetos que demonstram expertise em desenvolvimento web moderno, desde plataformas SaaS até aplicações baseadas em conteúdo.",
       projects: [
         {
           title: "MinhaVez",
@@ -64,7 +64,7 @@ export const translations = {
       }
     },
     experience: {
-      badge: "Career Path",
+      badge: "Carreira",
       title: "Experiência Profissional",
       subtitle: "Jornada de desenvolvimento e crescimento profissional",
       positions: [
@@ -106,10 +106,14 @@ export const translations = {
       ]
     },
     nav: {
+      home: "Início",
+      about: "Sobre",
+      projects: "Projetos",
+      experience: "Experiência",
+      blog: "Notícias",
+      contact: "Contato",
       services: "Serviços",
       products: "Produtos",
-      about: "Sobre",
-      contact: "Contato",
       webDev: "Desenvolvimento Web",
       mobileDev: "Desenvolvimento Mobile",
       uiDesign: "Design UI/UX",
@@ -267,10 +271,14 @@ export const translations = {
       ]
     },
     nav: {
+      home: "Home",
+      about: "About",
+      projects: "Projects",
+      experience: "Experience",
+      blog: "News",
+      contact: "Contact",
       services: "Services",
       products: "Products",
-      about: "About",
-      contact: "Contact",
       webDev: "Web Development",
       mobileDev: "Mobile Development",
       uiDesign: "UI/UX Design",
@@ -347,7 +355,7 @@ export const translations = {
       subtitle: "Herramientas y tecnologías que uso para construir experiencias digitales"
     },
     work: {
-      badge: "Selected Work",
+      badge: "Trabajos Seleccionados",
       title: "Proyectos Destacados",
       subtitle: "Una colección de proyectos que muestran experiencia en desarrollo web moderno, desde plataformas SaaS hasta aplicaciones basadas en contenido.",
       projects: [
@@ -386,7 +394,7 @@ export const translations = {
       }
     },
     experience: {
-      badge: "Career Path",
+      badge: "Carrera",
       title: "Experiencia Profesional",
       subtitle: "Viaje de desarrollo y crecimiento profesional",
       positions: [
@@ -428,10 +436,14 @@ export const translations = {
       ]
     },
     nav: {
+      home: "Inicio",
+      about: "Acerca de",
+      projects: "Proyectos",
+      experience: "Experiencia",
+      blog: "Noticias",
+      contact: "Contacto",
       services: "Servicios",
       products: "Productos",
-      about: "Acerca de",
-      contact: "Contacto",
       webDev: "Desarrollo Web",
       mobileDev: "Desarrollo Móvil",
       uiDesign: "Diseño UI/UX",

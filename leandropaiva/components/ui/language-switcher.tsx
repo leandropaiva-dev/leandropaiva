@@ -25,8 +25,8 @@ export const LanguageSwitcher = () => {
 
   const handleLanguageChange = (language: Language) => {
     setIsOpen(false);
-    // Simple navigation to new locale
-    router.push(`/${language.code}`);
+    // Force a full page reload to reset all states
+    window.location.href = `/${language.code}`;
   };
 
   return (

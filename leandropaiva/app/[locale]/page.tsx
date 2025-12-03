@@ -4,6 +4,7 @@ import Silk from '../../components/Silk';
 import { LanguageSwitcher } from '../../components/ui/language-switcher';
 import { getTranslations, type Locale } from '../../lib/translations';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import { AnimatedBeam } from '../../components/ui/animated-beam';
 import { cn } from '../../lib/utils';
 import { motion } from 'framer-motion';
@@ -73,7 +74,7 @@ function HorizontalScrollSection({ workT, navT }: { workT: any; navT: any }) {
   }, [])
 
   useEffect(() => {
-    if (isMobile) return // Não aplica scroll horizontal no mobile
+    if (isMobile) return
 
     const section = sectionRef.current
     const trigger = triggerRef.current
@@ -101,11 +102,37 @@ function HorizontalScrollSection({ workT, navT }: { workT: any; navT: any }) {
     }
   }, [isMobile])
 
+  // Autoplay para mobile
+  useEffect(() => {
+    if (!api || !isMobile) return
+
+    const interval = setInterval(() => {
+      api.scrollNext()
+    }, 3000)
+
+    return () => clearInterval(interval)
+  }, [api, isMobile])
+
+  // Atualizar slide atual
+  useEffect(() => {
+    if (!api) return
+
+    api.on('select', () => {
+      setCurrentSlide(api.selectedScrollSnap())
+    })
+  }, [api])
+
   // Mobile Carousel
   if (isMobile) {
     return (
       <div className="relative bg-black py-12 px-4">
-        <Carousel className="w-full max-w-sm mx-auto">
+        <Carousel
+          className="w-full max-w-sm mx-auto"
+          setApi={setApi}
+          opts={{
+            loop: true,
+          }}
+        >
           <CarouselContent>
             {projects.map((project: any) => (
               <CarouselItem key={project.id}>
@@ -170,8 +197,22 @@ function HorizontalScrollSection({ workT, navT }: { workT: any; navT: any }) {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="left-0" />
-          <CarouselNext className="right-0" />
+
+          {/* Bullets */}
+          <div className="flex justify-center gap-2 mt-8">
+            {projects.map((_: any, index: number) => (
+              <button
+                key={index}
+                onClick={() => api?.scrollTo(index)}
+                className={`h-2 rounded-full transition-all ${
+                  index === currentSlide
+                    ? 'w-8 bg-white'
+                    : 'w-2 bg-white/30 hover:bg-white/50'
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
         </Carousel>
       </div>
     )
@@ -363,6 +404,8 @@ export default function Home() {
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
+  const [blogApi, setBlogApi] = useState<any>();
+  const [currentBlogSlide, setCurrentBlogSlide] = useState(0);
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -383,6 +426,26 @@ export default function Home() {
 
     fetchPosts();
   }, []);
+
+  // Autoplay blog carousel
+  useEffect(() => {
+    if (!blogApi || blogPosts.length === 0) return;
+
+    const interval = setInterval(() => {
+      blogApi.scrollNext();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [blogApi, blogPosts]);
+
+  // Atualizar slide atual do blog
+  useEffect(() => {
+    if (!blogApi) return;
+
+    blogApi.on('select', () => {
+      setCurrentBlogSlide(blogApi.selectedScrollSnap());
+    });
+  }, [blogApi]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -434,14 +497,20 @@ export default function Home() {
 
               {/* Menu Items - Center */}
               <div className="hidden md:flex items-center space-x-8">
-                <a href="#services" className="text-white/80 hover:text-white text-sm transition-colors">
-                  {navT.services}
-                </a>
-                <a href="#products" className="text-white/80 hover:text-white text-sm transition-colors">
-                  {navT.products}
+                <a href={`/${locale}`} className="text-white/80 hover:text-white text-sm transition-colors">
+                  {navT.home}
                 </a>
                 <a href="#about" className="text-white/80 hover:text-white text-sm transition-colors">
                   {navT.about}
+                </a>
+                <a href="#work" className="text-white/80 hover:text-white text-sm transition-colors">
+                  {navT.projects}
+                </a>
+                <a href="#experience" className="text-white/80 hover:text-white text-sm transition-colors">
+                  {navT.experience}
+                </a>
+                <a href="#blog" className="text-white/80 hover:text-white text-sm transition-colors">
+                  {navT.blog}
                 </a>
                 <a href="#contact" className="text-white/80 hover:text-white text-sm transition-colors">
                   {navT.contact}
@@ -498,7 +567,7 @@ export default function Home() {
       </div>
 
       {/* About Section */}
-      <section className="w-full bg-black py-16 md:py-24 px-4 md:px-8">
+      <section id="about" className="w-full bg-black py-16 md:py-24 px-4 md:px-8">
         <div className="w-full md:w-10/12 mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12 lg:gap-16">
             {/* Left Side - 2/3 Content */}
@@ -564,7 +633,7 @@ export default function Home() {
       </section>
 
       {/* Featured Work Header - Divider */}
-      <section className="w-full bg-black py-12 md:py-16 px-4 md:px-8">
+      <section id="work" className="w-full bg-black py-12 md:py-16 px-4 md:px-8">
         <div className="w-full md:w-10/12 mx-auto">
           <span className="inline-block px-3 md:px-4 py-1 md:py-1.5 text-xs font-medium tracking-widest uppercase border border-white/20 rounded-full bg-white/5 backdrop-blur-sm text-white/80 mb-4 md:mb-6">
             {workT.badge}
@@ -582,7 +651,7 @@ export default function Home() {
       <HorizontalScrollSection workT={workT} navT={navT} />
 
       {/* Experience Timeline Section */}
-      <section className="w-full bg-black py-16 md:py-20 px-4 md:px-8">
+      <section id="experience" className="w-full bg-black py-16 md:py-20 px-4 md:px-8">
         <div className="w-full md:w-10/12 mx-auto">
           {/* Header */}
           <div className="mb-10 md:mb-12">
@@ -878,7 +947,7 @@ export default function Home() {
       </section>
 
       {/* Blog Section */}
-      <section className="w-full bg-black py-16 md:py-24 px-4 md:px-8">
+      <section id="blog" className="w-full bg-black py-16 md:py-24 px-4 md:px-8">
         <div className="w-full lg:w-10/12 mx-auto">
           {/* Header */}
           <div className="mb-10 md:mb-12">
@@ -906,13 +975,92 @@ export default function Home() {
               ))}
             </div>
           ) : blogPosts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <>
+              {/* Mobile Carousel */}
+              <div className="md:hidden">
+                <Carousel
+                  className="w-full"
+                  setApi={setBlogApi}
+                  opts={{
+                    loop: true,
+                  }}
+                >
+                  <CarouselContent>
+                    {blogPosts.map((post: any) => (
+                      <CarouselItem key={post.id}>
+                        <Link
+                          href={`/${locale}/blog/${post.slug}`}
+                          className="group bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:bg-white/[0.05] hover:border-white/20 transition-all duration-300 flex flex-col h-full block"
+                        >
+                          {/* Featured Image - 16:9 aspect ratio */}
+                          <div className="relative w-full aspect-video overflow-hidden flex-shrink-0">
+                            {(post.jetpack_featured_media_url || post.featured_image) ? (
+                              <img
+                                src={post.jetpack_featured_media_url || post.featured_image}
+                                alt={post.title?.rendered || post.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gradient-to-br from-purple-600/20 to-blue-600/20" />
+                            )}
+                          </div>
+
+                          <div className="p-6 flex flex-col flex-grow">
+                            {/* Date */}
+                            <p className="text-xs text-white/40 uppercase tracking-wider mb-3">
+                              {new Date(post.date).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
+                            </p>
+
+                            {/* Title */}
+                            <h3 className="text-lg md:text-xl font-bold text-white mb-3 group-hover:text-purple-400 transition-colors line-clamp-2">
+                              {post.title?.rendered || post.title}
+                            </h3>
+
+                            {/* Excerpt */}
+                            <div className="text-sm text-white/60 leading-relaxed line-clamp-3 mb-4 flex-grow">
+                              {post.excerpt && typeof post.excerpt === 'string'
+                                ? post.excerpt.replace(/<[^>]*>/g, '').substring(0, 150) + '...'
+                                : 'Read more about this article...'}
+                            </div>
+
+                            {/* Read More */}
+                            <span className="text-sm text-purple-400 font-medium group-hover:text-purple-300 transition-colors mt-auto">
+                              {blogT.readMore} →
+                            </span>
+                          </div>
+                        </Link>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+
+                  {/* Bullets */}
+                  <div className="flex justify-center gap-2 mt-8">
+                    {blogPosts.map((_: any, index: number) => (
+                      <button
+                        key={index}
+                        onClick={() => blogApi?.scrollTo(index)}
+                        className={`h-2 rounded-full transition-all ${
+                          index === currentBlogSlide
+                            ? 'w-8 bg-white'
+                            : 'w-2 bg-white/30 hover:bg-white/50'
+                        }`}
+                        aria-label={`Go to slide ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                </Carousel>
+              </div>
+
+              {/* Desktop Grid */}
+              <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {blogPosts.map((post: any) => (
-                <a
+                <Link
                   key={post.id}
-                  href={post.URL || post.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={`/${locale}/blog/${post.slug}`}
                   className="group bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:bg-white/[0.05] hover:border-white/20 transition-all duration-300 flex flex-col h-full"
                 >
                   {/* Featured Image - 16:9 aspect ratio */}
@@ -955,9 +1103,10 @@ export default function Home() {
                       {blogT.readMore} →
                     </span>
                   </div>
-                </a>
+                </Link>
               ))}
-            </div>
+              </div>
+            </>
           ) : (
             <div className="text-center text-white/40 py-12">
               No posts found
