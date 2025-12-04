@@ -11,6 +11,9 @@ import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../../components/ui/carousel';
+import BlogCard from '../../components/BlogCard';
+import ScrollFloat from '../../components/ScrollFloat';
+import CountUp from '../../components/CountUp';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -102,16 +105,16 @@ function HorizontalScrollSection({ workT, navT }: { workT: any; navT: any }) {
     }
   }, [isMobile])
 
-  // Autoplay para mobile
-  useEffect(() => {
-    if (!api || !isMobile) return
+  // Autoplay para mobile - DISABLED to prevent hydration issues
+  // useEffect(() => {
+  //   if (!api || !isMobile) return
 
-    const interval = setInterval(() => {
-      api.scrollNext()
-    }, 3000)
+  //   const interval = setInterval(() => {
+  //     api.scrollNext()
+  //   }, 3000)
 
-    return () => clearInterval(interval)
-  }, [api, isMobile])
+  //   return () => clearInterval(interval)
+  // }, [api, isMobile])
 
   // Atualizar slide atual
   useEffect(() => {
@@ -133,10 +136,10 @@ function HorizontalScrollSection({ workT, navT }: { workT: any; navT: any }) {
             loop: true,
           }}
         >
-          <CarouselContent>
+          <CarouselContent className="-ml-4">
             {projects.map((project: any) => (
-              <CarouselItem key={project.id}>
-                <div className="flex flex-col space-y-6 py-8">
+              <CarouselItem key={project.id} className="pl-4">
+                <div className="flex flex-col space-y-6 py-8 h-full">
                   {/* Image/Preview */}
                   <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-br from-purple-600/20 to-blue-600/20">
                     <div className="absolute inset-0 flex items-center justify-center text-white/30 text-xs text-center px-4">
@@ -146,12 +149,12 @@ function HorizontalScrollSection({ workT, navT }: { workT: any; navT: any }) {
                   </div>
 
                   {/* Info */}
-                  <div className="flex flex-col space-y-4">
+                  <div className="flex flex-col space-y-4 h-full">
                     <h3 className="text-3xl font-bold text-white">
                       {project.title}
                     </h3>
 
-                    <p className="text-base text-white/70 leading-relaxed">
+                    <p className="text-sm text-white/60 leading-snug line-clamp-5">
                       {project.description}
                     </p>
 
@@ -228,14 +231,14 @@ function HorizontalScrollSection({ workT, navT }: { workT: any; navT: any }) {
               key={project.id}
               className="flex-shrink-0 w-screen flex items-center justify-center px-4 lg:px-8 py-16"
             >
-              <div className="w-full lg:w-10/12 mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-12">
+              <div className="w-full lg:w-10/12 mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-12 items-center">
                 {/* Left Side - Info */}
                 <div className="flex flex-col justify-center space-y-6 lg:space-y-8">
                   <h3 className="text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold text-white leading-tight">
                     {project.title}
                   </h3>
 
-                  <p className="text-lg lg:text-xl xl:text-2xl text-white/70 leading-relaxed">
+                  <p className="text-sm lg:text-base text-white/60 leading-snug line-clamp-5">
                     {project.description}
                   </p>
 
@@ -279,8 +282,8 @@ function HorizontalScrollSection({ workT, navT }: { workT: any; navT: any }) {
                 </div>
 
                 {/* Right Side - Image/Preview */}
-                <div className="flex items-center justify-center">
-                  <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-br from-purple-600/20 to-blue-600/20 hover:border-white/20 transition-all duration-300">
+                <div className="flex items-center justify-center h-full">
+                  <div className="relative w-full h-full min-h-[400px] rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-br from-purple-600/20 to-blue-600/20 hover:border-white/20 transition-all duration-300">
                     <div className="absolute inset-0 flex items-center justify-center text-white/30 text-sm text-center px-4">
                       {project.title} Preview<br />
                       Video/GIF on Hover
@@ -299,6 +302,11 @@ function HorizontalScrollSection({ workT, navT }: { workT: any; navT: any }) {
 function TechStackBeam() {
   const containerRef = useRef<HTMLDivElement>(null)
   const centerRef = useRef<HTMLDivElement>(null)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Refs para as tecnologias
   const reactRef = useRef<HTMLDivElement>(null)
@@ -329,6 +337,14 @@ function TechStackBeam() {
     { ref: vercelRef, name: 'Vercel', icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 100 100" className="w-full h-full"><path fill="#000" fillRule="evenodd" d="M100 93.957 50 7 0 93.957z" clipRule="evenodd" /></svg> },
   ]
 
+  if (!isMounted) {
+    return (
+      <div className="relative flex w-full items-center justify-center overflow-hidden py-16 md:py-24">
+        <div className="relative w-full max-w-lg md:max-w-4xl aspect-square md:aspect-[2/1]" />
+      </div>
+    )
+  }
+
   return (
     <div
       ref={containerRef}
@@ -349,7 +365,7 @@ function TechStackBeam() {
         {technologies.map((tech, index) => {
           const angle = (index * 360) / technologies.length - 90 // Start from top
           const radiusX = 40 // horizontal radius percentage
-          const radiusY = window.innerWidth < 768 ? 40 : 35 // Circle on mobile, ellipse on desktop
+          const radiusY = isMounted && window.innerWidth < 768 ? 40 : 35 // Circle on mobile, ellipse on desktop
           const x = 50 + radiusX * Math.cos((angle * Math.PI) / 180)
           const y = 50 + radiusY * Math.sin((angle * Math.PI) / 180)
 
@@ -427,16 +443,52 @@ export default function Home() {
     fetchPosts();
   }, []);
 
-  // Autoplay blog carousel
+  // Autoplay blog carousel - DISABLED to prevent hydration issues
+  // useEffect(() => {
+  //   if (!blogApi || blogPosts.length === 0) return;
+
+  //   const interval = setInterval(() => {
+  //     blogApi.scrollNext();
+  //   }, 3000);
+
+  //   return () => clearInterval(interval);
+  // }, [blogApi, blogPosts]);
+
+  // Scroll Reveal Animation
   useEffect(() => {
-    if (!blogApi || blogPosts.length === 0) return;
+    const revealElements = document.querySelectorAll('.reveal-element');
 
-    const interval = setInterval(() => {
-      blogApi.scrollNext();
-    }, 3000);
+    revealElements.forEach((element) => {
+      gsap.fromTo(
+        element,
+        {
+          opacity: 0,
+          y: 60,
+          scale: 0.95,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: element,
+            start: 'top bottom-=100',
+            toggleActions: 'play none none none',
+          },
+        }
+      );
+    });
 
-    return () => clearInterval(interval);
-  }, [blogApi, blogPosts]);
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => {
+        if (trigger.vars.trigger && (trigger.vars.trigger as HTMLElement).classList?.contains('reveal-element')) {
+          trigger.kill();
+        }
+      });
+    };
+  }, []);
 
   // Atualizar slide atual do blog
   useEffect(() => {
@@ -566,47 +618,163 @@ export default function Home() {
         </div>
       </div>
 
-      {/* About Section */}
+      {/* About Section - Bento Grid */}
       <section id="about" className="w-full bg-black py-16 md:py-24 px-4 md:px-8">
         <div className="w-full md:w-10/12 mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12 lg:gap-16">
-            {/* Left Side - 2/3 Content */}
-            <div className="lg:col-span-2 space-y-6 md:space-y-8">
-              {/* Title */}
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 md:mb-8">
-                {aboutT.title}
-              </h2>
+          {/* Title */}
+          <div className="reveal-element mb-12">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">
+              {aboutT.title}
+            </h2>
+          </div>
 
-              {/* Description Paragraphs */}
-              <div className="space-y-4 md:space-y-6 text-base md:text-lg text-white/70 leading-relaxed">
-                <p>{aboutT.description1}</p>
-                <p>{aboutT.description2}</p>
-                <p>{aboutT.description3}</p>
-              </div>
+          {/* Bento Grid Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 md:gap-6">
+            {/* Photo Card - Larger square */}
+            <div className="reveal-element lg:col-span-5 lg:row-span-2">
+              <div className="relative aspect-square group bg-white/[0.02] border border-white/10 rounded-3xl overflow-hidden hover:bg-white/[0.04] hover:border-white/20 transition-all duration-300">
+                {/* Decorative border frame */}
+                <div className="absolute -inset-1 bg-gradient-to-br from-purple-600/20 via-blue-600/20 to-purple-600/20 rounded-3xl blur-md group-hover:blur-lg transition-all duration-300 opacity-0 group-hover:opacity-100"></div>
 
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-4 md:gap-8 pt-6 md:pt-8">
-                <div>
-                  <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">20+</div>
-                  <div className="text-xs md:text-sm text-white/60 uppercase tracking-wider">{aboutT.stats.projects}</div>
-                </div>
-                <div>
-                  <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">3+</div>
-                  <div className="text-xs md:text-sm text-white/60 uppercase tracking-wider">{aboutT.stats.years}</div>
-                </div>
-                <div>
-                  <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">100%</div>
-                  <div className="text-xs md:text-sm text-white/60 uppercase tracking-wider">{aboutT.stats.dedication}</div>
+                {/* Image container */}
+                <div className="relative w-full h-full rounded-2xl overflow-hidden">
+                  <img
+                    src="/leandro1.jpg"
+                    alt="Leandro Paiva"
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Strong gradient overlay - only bottom portion */}
+                  <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black to-transparent"></div>
+
+                  {/* Name overlay */}
+                  <div className="absolute bottom-8 left-8 right-8">
+                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">Leandro Paiva</h3>
+                    <p className="text-base md:text-lg text-purple-400 font-medium">Front-End Developer</p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Right Side - 1/3 Image */}
-            <div className="lg:col-span-1 flex items-center justify-center mt-8 lg:mt-0">
-              <div className="relative w-full max-w-sm aspect-square">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-2xl"></div>
-                <div className="absolute inset-0 flex items-center justify-center text-white/30 text-sm">
-                  [Foto Profissional]
+            {/* About Me Card */}
+            <div className="reveal-element lg:col-span-7 flex items-start">
+              <div className="w-full bg-white/[0.02] border border-white/10 rounded-3xl p-6 md:p-8 hover:bg-white/[0.04] hover:border-white/20 transition-all duration-300">
+                <h3 className="text-lg font-bold text-white mb-4">Sobre Mim</h3>
+                <div className="space-y-3 text-sm text-white/70 leading-relaxed">
+                  <p>
+                    Tenho 25 anos e sou desenvolvedor front-end brasileiro vivendo em Portugal há 3 anos. Minha jornada na tecnologia começou com curiosidade e evoluiu para uma paixão genuína por criar experiências digitais excepcionais.
+                  </p>
+                  <p>
+                    Especializo-me em desenvolvimento moderno com Next.js, TypeScript e Tailwind CSS, sempre buscando as melhores práticas do ecossistema React. Meu objetivo é construir uma carreira sólida, contribuindo para projetos que combinem inovação tecnológica com impacto real.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Career Journey Card - Horizontal Timeline */}
+            <div className="reveal-element lg:col-span-7 flex items-end">
+              <div className="w-full bg-white/[0.02] border border-white/10 rounded-3xl p-5 md:p-6 hover:bg-white/[0.04] hover:border-white/20 transition-all duration-300">
+                <h3 className="text-base font-bold text-white mb-3">Trajetória Profissional</h3>
+                <div className="relative">
+                  {/* Horizontal Timeline Line */}
+                  <div className="absolute top-[7px] left-2 right-2 h-[2px] bg-gradient-to-r from-purple-500/50 via-blue-500/50 to-purple-500"></div>
+
+                  {/* Timeline Items */}
+                  <div className="flex justify-between items-start pt-5">
+                    <div className="flex flex-col items-center gap-1.5 flex-1">
+                      <div className="w-4 h-4 rounded-full bg-white/10 border-2 border-purple-500/50 -mt-[27px]"></div>
+                      <p className="text-[9px] text-purple-400 font-medium text-center">NOS</p>
+                      <p className="text-[8px] text-white/50 text-center">2021</p>
+                      <p className="text-[9px] text-white/70 text-center leading-tight">Apoio Técnico</p>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1.5 flex-1">
+                      <div className="w-4 h-4 rounded-full bg-white/10 border-2 border-blue-500/50 -mt-[27px]"></div>
+                      <p className="text-[9px] text-blue-400 font-medium text-center">Crunch</p>
+                      <p className="text-[8px] text-white/50 text-center">2022</p>
+                      <p className="text-[9px] text-white/70 text-center leading-tight">Apoio Cliente 1ª</p>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1.5 flex-1">
+                      <div className="w-4 h-4 rounded-full bg-white/10 border-2 border-blue-500/50 -mt-[27px]"></div>
+                      <p className="text-[9px] text-blue-400 font-medium text-center">Crunch</p>
+                      <p className="text-[8px] text-white/50 text-center">2023</p>
+                      <p className="text-[9px] text-white/70 text-center leading-tight">Analista 2ª B2B</p>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1.5 flex-1">
+                      <div className="w-4 h-4 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 border-2 border-purple-400 shadow-lg shadow-purple-500/50 -mt-[27px]"></div>
+                      <p className="text-[9px] text-purple-400 font-bold text-center">Crunch</p>
+                      <p className="text-[8px] text-white/50 text-center">Atual</p>
+                      <p className="text-[9px] text-white text-center leading-tight">Web & Data</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Stats Cards - Each takes 2 columns (total 6 for 3 cards = half width) */}
+            <div className="reveal-element lg:col-span-2">
+              <div className="aspect-square bg-gradient-to-br from-purple-600/10 to-blue-600/10 border border-purple-500/20 rounded-3xl p-4 hover:border-purple-500/40 transition-all duration-300 flex flex-col items-center justify-center text-center">
+                <div className="text-3xl md:text-4xl font-bold text-white mb-1">
+                  <CountUp end={20} suffix="+" />
+                </div>
+                <div className="text-[10px] text-white/60 uppercase tracking-wider">Projetos</div>
+              </div>
+            </div>
+
+            <div className="reveal-element lg:col-span-2">
+              <div className="aspect-square bg-gradient-to-br from-blue-600/10 to-purple-600/10 border border-blue-500/20 rounded-3xl p-4 hover:border-blue-500/40 transition-all duration-300 flex flex-col items-center justify-center text-center">
+                <div className="text-3xl md:text-4xl font-bold text-white mb-1">
+                  <CountUp end={3} suffix="+" />
+                </div>
+                <div className="text-[10px] text-white/60 uppercase tracking-wider">Anos</div>
+              </div>
+            </div>
+
+            <div className="reveal-element lg:col-span-2">
+              <div className="aspect-square bg-gradient-to-br from-purple-600/10 to-pink-600/10 border border-purple-500/20 rounded-3xl p-4 hover:border-purple-500/40 transition-all duration-300 flex flex-col items-center justify-center text-center">
+                <div className="text-3xl md:text-4xl font-bold text-white mb-1">
+                  <CountUp end={100} suffix="%" />
+                </div>
+                <div className="text-[10px] text-white/60 uppercase tracking-wider">Dedicação</div>
+              </div>
+            </div>
+
+            {/* Tech Stack Card - Takes remaining 6 columns (half width) */}
+            <div className="reveal-element lg:col-span-6">
+              <div className="h-full bg-white/[0.02] border border-white/10 rounded-3xl p-4 hover:bg-white/[0.04] hover:border-white/20 transition-all duration-300 flex flex-col justify-center">
+                <h3 className="text-sm font-bold text-white mb-3">Stack Preferida</h3>
+                <div className="grid grid-cols-3 lg:grid-cols-5 gap-3">
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className="w-10 h-10 lg:w-12 lg:h-12">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 100 100" className="w-full h-full"><path fill="#000" d="M50 99.999c27.614 0 50-22.386 50-50s-22.386-50-50-50-50 22.386-50 50 22.386 50 50 50" /><path fill="url(#nextA)" d="M83.06 87.51 38.412 30H30v39.983h6.73V38.545L77.777 91.58a50 50 0 0 0 5.283-4.07" /><path fill="url(#nextB)" d="M70.556 29.999h-6.667v40h6.667z" /><defs><linearGradient id="nextA" x1="60.556" x2="80.278" y1="64.721" y2="89.166" gradientUnits="userSpaceOnUse"><stop stopColor="#fff" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient><linearGradient id="nextB" x1="67.222" x2="67.111" y1="29.999" y2="59.374" gradientUnits="userSpaceOnUse"><stop stopColor="#fff" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient></defs></svg>
+                    </div>
+                    <span className="text-[9px] text-white/70 text-center">Next.js</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className="w-10 h-10 lg:w-12 lg:h-12">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 100 100" className="w-full h-full"><path fill="#06B6D4" d="M50 20q-20 0-25 19.994 7.5-9.997 17.5-7.498c3.804.95 6.522 3.71 9.532 6.764 4.902 4.974 10.576 10.731 22.969 10.731q20 0 24.999-19.995-7.5 9.997-17.5 7.5c-3.803-.951-6.521-3.71-9.531-6.765C68.067 25.758 62.392 20 50 20M25 49.991q-20 0-25 19.995 7.5-9.998 17.5-7.498c3.803.952 6.522 3.71 9.532 6.763C31.933 74.225 37.608 79.984 50 79.984q20 0 25-19.995-7.5 9.997-17.5 7.498c-3.803-.95-6.522-3.71-9.532-6.763C43.066 55.75 37.393 49.991 25 49.991" /></svg>
+                    </div>
+                    <span className="text-[9px] text-white/70 text-center">Tailwind</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className="w-10 h-10 lg:w-12 lg:h-12">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 100 100" className="w-full h-full"><path fill="#017ACB" d="M0 0h100v100H0z" /><path fill="#fff" d="M48.016 37.031h4.797v8.282h-12.97v36.843l-.343.094c-.469.125-6.64.125-7.969-.016l-1.062-.093V45.312H17.5v-8.28l4.11-.048c2.25-.03 8.03-.03 12.843 0 4.813.032 10.906.047 13.563.047m36.61 41.219c-1.907 2.016-3.954 3.14-7.36 4.063-1.485.406-1.735.421-5.078.406-3.344-.016-3.61-.016-5.235-.438-4.203-1.078-7.594-3.187-9.906-6.172-.656-.843-1.734-2.593-1.734-2.812 0-.063.156-.203.359-.297s.625-.36.969-.562c.343-.204.968-.579 1.39-.797.422-.22 1.64-.938 2.703-1.579 1.063-.64 2.032-1.156 2.141-1.156.11 0 .313.219.469.485.937 1.578 3.125 3.593 4.672 4.28.953.407 3.062.86 4.078.86.937 0 2.656-.406 3.578-.828.984-.453 1.484-.906 2.078-1.812.406-.641.453-.813.438-2.032 0-1.125-.063-1.437-.375-1.953-.875-1.437-2.063-2.187-6.875-4.312-4.97-2.203-7.204-3.516-9.016-5.282-1.344-1.312-1.61-1.67-2.453-3.312-1.094-2.11-1.235-2.797-1.25-5.937-.016-2.204.031-2.922.265-3.672.329-1.125 1.391-3.297 1.875-3.844 1-1.172 1.36-1.531 2.063-2.11 2.125-1.75 5.438-2.906 8.61-3.015.359 0 1.546.062 2.656.14 3.187.266 5.359 1.047 7.453 2.72 1.578 1.25 3.968 4.187 3.734 4.577-.156.235-6.39 4.391-6.797 4.516-.25.078-.422-.016-.765-.422-2.125-2.547-2.985-3.094-5.047-3.219-1.469-.093-2.25.078-3.235.735-1.03.687-1.53 1.734-1.53 3.187.015 2.125.827 3.125 3.827 4.61 1.938.953 3.594 1.734 3.719 1.734.188 0 4.203 2 5.25 2.625 4.875 2.86 6.86 5.797 7.375 10.86.375 3.812-.703 7.296-3.047 9.765" /></svg>
+                    </div>
+                    <span className="text-[9px] text-white/70 text-center">TypeScript</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center">
+                      <svg viewBox="0 0 256 256" className="w-full h-full" xmlns="http://www.w3.org/2000/svg"><rect width="256" height="256" fill="none"/><line x1="208" y1="128" x2="128" y2="208" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16" className="text-white"/><line x1="192" y1="40" x2="40" y2="192" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16" className="text-white"/></svg>
+                    </div>
+                    <span className="text-[9px] text-white/70 text-center">shadcn/ui</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className="w-10 h-10 lg:w-12 lg:h-12">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 100 100" className="w-full h-full"><path fill="#000" fillRule="evenodd" d="M100 93.957 50 7 0 93.957z" clipRule="evenodd" /></svg>
+                    </div>
+                    <span className="text-[9px] text-white/70 text-center">Vercel</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -975,138 +1143,11 @@ export default function Home() {
               ))}
             </div>
           ) : blogPosts.length > 0 ? (
-            <>
-              {/* Mobile Carousel */}
-              <div className="md:hidden">
-                <Carousel
-                  className="w-full"
-                  setApi={setBlogApi}
-                  opts={{
-                    loop: true,
-                  }}
-                >
-                  <CarouselContent>
-                    {blogPosts.map((post: any) => (
-                      <CarouselItem key={post.id}>
-                        <Link
-                          href={`/${locale}/blog/${post.slug}`}
-                          className="group bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:bg-white/[0.05] hover:border-white/20 transition-all duration-300 flex flex-col h-full block"
-                        >
-                          {/* Featured Image - 16:9 aspect ratio */}
-                          <div className="relative w-full aspect-video overflow-hidden flex-shrink-0">
-                            {(post.jetpack_featured_media_url || post.featured_image) ? (
-                              <img
-                                src={post.jetpack_featured_media_url || post.featured_image}
-                                alt={post.title?.rendered || post.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-purple-600/20 to-blue-600/20" />
-                            )}
-                          </div>
-
-                          <div className="p-6 flex flex-col flex-grow">
-                            {/* Date */}
-                            <p className="text-xs text-white/40 uppercase tracking-wider mb-3">
-                              {new Date(post.date).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                              })}
-                            </p>
-
-                            {/* Title */}
-                            <h3 className="text-lg md:text-xl font-bold text-white mb-3 group-hover:text-purple-400 transition-colors line-clamp-2">
-                              {post.title?.rendered || post.title}
-                            </h3>
-
-                            {/* Excerpt */}
-                            <div className="text-sm text-white/60 leading-relaxed line-clamp-3 mb-4 flex-grow">
-                              {post.excerpt && typeof post.excerpt === 'string'
-                                ? post.excerpt.replace(/<[^>]*>/g, '').substring(0, 150) + '...'
-                                : 'Read more about this article...'}
-                            </div>
-
-                            {/* Read More */}
-                            <span className="text-sm text-purple-400 font-medium group-hover:text-purple-300 transition-colors mt-auto">
-                              {blogT.readMore} →
-                            </span>
-                          </div>
-                        </Link>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-
-                  {/* Bullets */}
-                  <div className="flex justify-center gap-2 mt-8">
-                    {blogPosts.map((_: any, index: number) => (
-                      <button
-                        key={index}
-                        onClick={() => blogApi?.scrollTo(index)}
-                        className={`h-2 rounded-full transition-all ${
-                          index === currentBlogSlide
-                            ? 'w-8 bg-white'
-                            : 'w-2 bg-white/30 hover:bg-white/50'
-                        }`}
-                        aria-label={`Go to slide ${index + 1}`}
-                      />
-                    ))}
-                  </div>
-                </Carousel>
-              </div>
-
-              {/* Desktop Grid */}
-              <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {blogPosts.map((post: any) => (
-                <Link
-                  key={post.id}
-                  href={`/${locale}/blog/${post.slug}`}
-                  className="group bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:bg-white/[0.05] hover:border-white/20 transition-all duration-300 flex flex-col h-full"
-                >
-                  {/* Featured Image - 16:9 aspect ratio */}
-                  <div className="relative w-full aspect-video overflow-hidden flex-shrink-0">
-                    {(post.jetpack_featured_media_url || post.featured_image) ? (
-                      <img
-                        src={post.jetpack_featured_media_url || post.featured_image}
-                        alt={post.title?.rendered || post.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-purple-600/20 to-blue-600/20" />
-                    )}
-                  </div>
-
-                  <div className="p-6 flex flex-col flex-grow">
-                    {/* Date */}
-                    <p className="text-xs text-white/40 uppercase tracking-wider mb-3">
-                      {new Date(post.date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </p>
-
-                    {/* Title */}
-                    <h3 className="text-lg md:text-xl font-bold text-white mb-3 group-hover:text-purple-400 transition-colors line-clamp-2">
-                      {post.title?.rendered || post.title}
-                    </h3>
-
-                    {/* Excerpt */}
-                    <div className="text-sm text-white/60 leading-relaxed line-clamp-3 mb-4 flex-grow">
-                      {post.excerpt && typeof post.excerpt === 'string'
-                        ? post.excerpt.replace(/<[^>]*>/g, '').substring(0, 150) + '...'
-                        : 'Read more about this article...'}
-                    </div>
-
-                    {/* Read More */}
-                    <span className="text-sm text-purple-400 font-medium group-hover:text-purple-300 transition-colors mt-auto">
-                      {blogT.readMore} →
-                    </span>
-                  </div>
-                </Link>
+                <BlogCard key={post.id} post={post} locale={locale} blogT={blogT} />
               ))}
-              </div>
-            </>
+            </div>
           ) : (
             <div className="text-center text-white/40 py-12">
               No posts found
@@ -1116,105 +1157,163 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="w-full bg-black border-t border-white/10 py-12 md:py-16 px-4 md:px-8">
-        <div className="w-full lg:w-10/12 mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-12">
-            {/* Brand & Description */}
-            <div className="lg:col-span-2">
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
-                Leandro Paiva
-              </h3>
-              <p className="text-sm md:text-base text-white/60 leading-relaxed mb-6">
-                {footerT.description}
-              </p>
-              <div className="flex gap-4">
-                <a
-                  href="mailto:leandro.works@outlook.com"
-                  className="w-10 h-10 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all"
-                  aria-label="Email"
-                >
-                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                </a>
-                <a
-                  href="https://www.linkedin.com/in/l-paiva/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all"
-                  aria-label="LinkedIn"
-                >
-                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                  </svg>
-                </a>
-                <a
-                  href="https://github.com/leandropaiva-dev"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all"
-                  aria-label="GitHub"
-                >
-                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-                  </svg>
-                </a>
+      <footer className="relative w-full bg-gradient-to-b from-black via-black to-purple-950/10 border-t border-white/10 pt-20 pb-8 px-4 md:px-8 overflow-hidden">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-purple-900/20 via-black to-black pointer-events-none"></div>
+
+        <div className="relative w-full lg:w-10/12 mx-auto">
+          {/* Main Content */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-16 mb-16">
+            {/* Brand Section - Takes more space */}
+            <div className="lg:col-span-5">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-2 bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+                    Leandro Paiva
+                  </h3>
+                  <p className="text-sm text-purple-400/80 font-medium">Front-End Developer</p>
+                </div>
+
+                <p className="text-base text-white/50 leading-relaxed max-w-md">
+                  {footerT.description}
+                </p>
+
+                {/* Social Links with hover effects */}
+                <div className="flex gap-3 pt-2">
+                  <a
+                    href="mailto:leandro.works@outlook.com"
+                    className="group relative w-11 h-11 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center hover:border-purple-500/50 hover:bg-purple-500/10 transition-all duration-300"
+                    aria-label="Email"
+                  >
+                    <svg className="w-5 h-5 text-white/70 group-hover:text-purple-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity bg-purple-500/20 blur-xl"></div>
+                  </a>
+
+                  <a
+                    href="https://www.linkedin.com/in/l-paiva/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative w-11 h-11 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center hover:border-blue-500/50 hover:bg-blue-500/10 transition-all duration-300"
+                    aria-label="LinkedIn"
+                  >
+                    <svg className="w-5 h-5 text-white/70 group-hover:text-blue-400 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                    <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity bg-blue-500/20 blur-xl"></div>
+                  </a>
+
+                  <a
+                    href="https://github.com/leandropaiva-dev"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative w-11 h-11 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center hover:border-white/30 hover:bg-white/10 transition-all duration-300"
+                    aria-label="GitHub"
+                  >
+                    <svg className="w-5 h-5 text-white/70 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                      <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+                    </svg>
+                    <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity bg-white/10 blur-xl"></div>
+                  </a>
+                </div>
               </div>
             </div>
 
             {/* Quick Links */}
-            <div>
-              <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+            <div className="lg:col-span-3">
+              <h4 className="text-xs font-bold text-white/90 uppercase tracking-widest mb-6 flex items-center gap-2">
+                <span className="w-6 h-px bg-gradient-to-r from-purple-500 to-transparent"></span>
                 {footerT.links}
               </h4>
               <ul className="space-y-3">
                 <li>
-                  <a href="#about" className="text-sm text-white/60 hover:text-white transition-colors">
+                  <a href="#about" className="text-sm text-white/50 hover:text-purple-400 transition-colors inline-flex items-center gap-2 group">
+                    <span className="w-0 group-hover:w-2 h-px bg-purple-400 transition-all duration-300"></span>
                     {navT.about}
                   </a>
                 </li>
                 <li>
-                  <a href="#work" className="text-sm text-white/60 hover:text-white transition-colors">
-                    {navT.products}
+                  <a href="#work" className="text-sm text-white/50 hover:text-purple-400 transition-colors inline-flex items-center gap-2 group">
+                    <span className="w-0 group-hover:w-2 h-px bg-purple-400 transition-all duration-300"></span>
+                    {navT.projects}
                   </a>
                 </li>
                 <li>
-                  <a href="#experience" className="text-sm text-white/60 hover:text-white transition-colors">
-                    {navT.services}
+                  <a href="#experience" className="text-sm text-white/50 hover:text-purple-400 transition-colors inline-flex items-center gap-2 group">
+                    <span className="w-0 group-hover:w-2 h-px bg-purple-400 transition-all duration-300"></span>
+                    {navT.experience}
                   </a>
                 </li>
                 <li>
-                  <a href="#contact" className="text-sm text-white/60 hover:text-white transition-colors">
+                  <a href="#blog" className="text-sm text-white/50 hover:text-purple-400 transition-colors inline-flex items-center gap-2 group">
+                    <span className="w-0 group-hover:w-2 h-px bg-purple-400 transition-all duration-300"></span>
+                    {navT.blog}
+                  </a>
+                </li>
+                <li>
+                  <a href="#contact" className="text-sm text-white/50 hover:text-purple-400 transition-colors inline-flex items-center gap-2 group">
+                    <span className="w-0 group-hover:w-2 h-px bg-purple-400 transition-all duration-300"></span>
                     {navT.contact}
                   </a>
                 </li>
               </ul>
             </div>
 
-            {/* Location */}
-            <div>
-              <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+            {/* Contact Info */}
+            <div className="lg:col-span-4">
+              <h4 className="text-xs font-bold text-white/90 uppercase tracking-widest mb-6 flex items-center gap-2">
+                <span className="w-6 h-px bg-gradient-to-r from-purple-500 to-transparent"></span>
                 {footerT.connect}
               </h4>
-              <div className="space-y-3">
-                <p className="text-sm text-white/60">
-                  Porto, Portugal
-                </p>
-                <a href="mailto:leandro.works@outlook.com" className="text-sm text-white/60 hover:text-white transition-colors block">
-                  leandro.works@outlook.com
-                </a>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-xs text-white/40 uppercase tracking-wider mb-1">Location</p>
+                    <p className="text-sm text-white/70">Porto, Portugal 🇵🇹</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-xs text-white/40 uppercase tracking-wider mb-1">Email</p>
+                    <a href="mailto:leandro.works@outlook.com" className="text-sm text-white/70 hover:text-purple-400 transition-colors">
+                      leandro.works@outlook.com
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Bottom Bar */}
-          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-xs md:text-sm text-white/40">
-              © {new Date().getFullYear()} Leandro Paiva. {footerT.rights}
-            </p>
-            <p className="text-xs md:text-sm text-white/40">
-              Made with ❤️ in Portugal
-            </p>
+          <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
+              <p className="text-xs text-white/30">
+                © {new Date().getFullYear()} Leandro Paiva
+              </p>
+              <div className="hidden md:block w-px h-4 bg-white/10"></div>
+              <p className="text-xs text-white/30">
+                {footerT.rights}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs text-white/30">
+              <span>Crafted with</span>
+              <span className="text-red-400 animate-pulse">♥</span>
+              <span>in Portugal</span>
+            </div>
           </div>
         </div>
       </footer>

@@ -1,6 +1,5 @@
 "use client";
-import React, { useState } from 'react';
-import { motion } from "motion/react";
+import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 
 interface Language {
@@ -20,6 +19,11 @@ export const LanguageSwitcher = () => {
   const params = useParams();
   const locale = (params.locale as string) || 'pt';
   const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const currentLang = languages.find(lang => lang.code === locale) || languages[0];
 
@@ -29,8 +33,19 @@ export const LanguageSwitcher = () => {
     window.location.href = `/${language.code}`;
   };
 
+  if (!isMounted) {
+    return (
+      <div className="relative">
+        <button className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-white">
+          <span className="text-lg">{currentLang.flag}</span>
+          <span className="text-sm font-medium">{currentLang.code.toUpperCase()}</span>
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="relative">
+    <div className="relative" suppressHydrationWarning>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-white"
@@ -48,10 +63,7 @@ export const LanguageSwitcher = () => {
       </button>
 
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: -10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: -10 }}
+        <div
           className="absolute top-full mt-2 right-0 bg-white dark:bg-black backdrop-blur-sm rounded-xl overflow-hidden border border-black/[0.2] dark:border-white/[0.2] shadow-xl min-w-[160px] z-50"
         >
           {languages.map((language) => (
@@ -66,7 +78,7 @@ export const LanguageSwitcher = () => {
               <span className="text-sm font-medium text-black dark:text-white">{language.name}</span>
             </button>
           ))}
-        </motion.div>
+        </div>
       )}
     </div>
   );

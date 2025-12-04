@@ -22,8 +22,8 @@ export default async function LocaleLayout({
   const {locale} = await params;
 
   return (
-    <html lang={locale}>
-      <body className={`${inter.variable} font-sans antialiased`}>
+    <html lang={locale} suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning>
         {children}
       </body>
     </html>
