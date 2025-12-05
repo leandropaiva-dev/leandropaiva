@@ -3,17 +3,17 @@ export const translations = {
   pt: {
     hero: {
       badge: "DESENVOLVEDOR FRONT-END",
-      title: "Criando experiências web premium",
+      title: "LEANDRO PAIVA",
       description: "Especializado em Next.js, TypeScript e desenvolvimento web moderno. Construindo aplicações escaláveis com atenção aos detalhes e performance.",
       viewWork: "Ver Trabalhos",
       getInTouch: "Entrar em Contato",
       scroll: "ROLAR"
     },
     about: {
-      title: "Construindo com propósito",
-      description1: "Sou um desenvolvedor front-end de 25 anos baseado em Portugal, focado em criar experiências digitais cuidadosas que combinam código limpo com design intuitivo.",
-      description2: "Fundei a Focus, uma agência digital onde desenvolvi projetos que vão desde landing pages até plataformas SaaS complexas com autenticação, integração de pagamentos e recursos em tempo real.",
-      description3: "Atualmente procuro oportunidades para contribuir com equipes inovadoras como Desenvolvedor Front-end, trazendo expertise em tecnologias web modernas e paixão por criar experiências de usuário excepcionais.",
+      title: "Sobre Mim",
+      description1: "Tenho 25 anos e sou desenvolvedor front-end brasileiro vivendo em Portugal há 3 anos. Minha jornada na tecnologia começou com curiosidade e evoluiu para uma paixão genuína por criar experiências digitais excepcionais.",
+      description2: "Especializo-me em desenvolvimento moderno com Next.js, TypeScript e Tailwind CSS, sempre buscando as melhores práticas do ecossistema React. Meu objetivo é construir uma carreira sólida, contribuindo para projetos que combinem inovação tecnológica com impacto real.",
+      description3: "",
       stats: {
         projects: "Projetos",
         years: "Anos",
@@ -168,17 +168,17 @@ export const translations = {
   en: {
     hero: {
       badge: "FRONT-END DEVELOPER",
-      title: "Crafting premium web experiences",
+      title: "LEANDRO PAIVA",
       description: "Specialized in Next.js, TypeScript, and modern web development. Building scalable applications with attention to detail and performance.",
       viewWork: "View Work",
       getInTouch: "Get in Touch",
       scroll: "SCROLL"
     },
     about: {
-      title: "Building with purpose",
-      description1: "I'm a 25-year-old front-end developer based in Portugal, focused on creating thoughtful digital experiences that combine clean code with intuitive design.",
-      description2: "Founded Focus, a digital agency where I've developed projects ranging from landing pages to complex SaaS platforms with authentication, payment integration, and real-time features.",
-      description3: "Currently seeking opportunities to contribute to innovative teams as a Front-end Developer, bringing expertise in modern web technologies and a passion for creating exceptional user experiences.",
+      title: "About Me",
+      description1: "I'm a 25-year-old Brazilian front-end developer living in Portugal for 3 years. My journey in technology started with curiosity and evolved into a genuine passion for creating exceptional digital experiences.",
+      description2: "I specialize in modern development with Next.js, TypeScript and Tailwind CSS, always seeking the best practices of the React ecosystem. My goal is to build a solid career, contributing to projects that combine technological innovation with real impact.",
+      description3: "",
       stats: {
         projects: "Projects",
         years: "Years",
@@ -333,17 +333,17 @@ export const translations = {
   es: {
     hero: {
       badge: "DESARROLLADOR FRONT-END",
-      title: "Creando experiencias web premium",
+      title: "LEANDRO PAIVA",
       description: "Especializado en Next.js, TypeScript y desarrollo web moderno. Construyendo aplicaciones escalables con atención al detalle y rendimiento.",
       viewWork: "Ver Trabajo",
       getInTouch: "Ponerse en Contacto",
       scroll: "DESPLAZAR"
     },
     about: {
-      title: "Construyendo con propósito",
-      description1: "Soy un desarrollador front-end de 25 años con sede en Portugal, enfocado en crear experiencias digitales cuidadosas que combinan código limpio con diseño intuitivo.",
-      description2: "Fundé Focus, una agencia digital donde he desarrollado proyectos que van desde landing pages hasta plataformas SaaS complejas con autenticación, integración de pagos y características en tiempo real.",
-      description3: "Actualmente busco oportunidades para contribuir a equipos innovadores como Desarrollador Front-end, aportando experiencia en tecnologías web modernas y pasión por crear experiencias de usuario excepcionales.",
+      title: "Sobre Mí",
+      description1: "Tengo 25 años y soy desarrollador front-end brasileño viviendo en Portugal desde hace 3 años. Mi viaje en tecnología comenzó con curiosidad y evolucionó en una pasión genuina por crear experiencias digitales excepcionales.",
+      description2: "Me especializo en desarrollo moderno con Next.js, TypeScript y Tailwind CSS, siempre buscando las mejores prácticas del ecosistema React. Mi objetivo es construir una carrera sólida, contribuyendo a proyectos que combinen innovación tecnológica con impacto real.",
+      description3: "",
       stats: {
         projects: "Proyectos",
         years: "Años",

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useRef, forwardRef, useEffect } from 'react';
-import Silk from '../../components/Silk';
+import Squares from '../../components/Squares';
 import { LanguageSwitcher } from '../../components/ui/language-switcher';
 import { getTranslations, type Locale } from '../../lib/translations';
 import { useParams } from 'next/navigation';
@@ -529,13 +529,13 @@ export default function Home() {
   return (
     <>
       <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
-        {/* Background Silk */}
-        <Silk
-          speed={20}
-          scale={1.3}
-          color="#5227FF"
-          noiseIntensity={0}
-          rotation={2}
+        {/* Background Squares */}
+        <Squares
+          speed={0.5}
+          squareSize={40}
+          direction='diagonal'
+          borderColor='#333'
+          hoverFillColor='#1a1a1a'
         />
 
         {/* Navbar */}
@@ -629,7 +629,7 @@ export default function Home() {
           </div>
 
           {/* Bento Grid Layout */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 md:gap-6">
+          <div className="flex flex-col gap-4 md:gap-6 lg:grid lg:grid-cols-12">
             {/* Photo Card - Larger square */}
             <div className="reveal-element lg:col-span-5 lg:row-span-2">
               <div className="relative aspect-square group bg-white/[0.02] border border-white/10 rounded-3xl overflow-hidden hover:bg-white/[0.04] hover:border-white/20 transition-all duration-300">
@@ -657,13 +657,13 @@ export default function Home() {
 
             {/* About Me Card */}
             <div className="reveal-element lg:col-span-7 flex items-start">
-              <div className="w-full bg-white/[0.02] border border-white/10 rounded-3xl p-6 md:p-8 hover:bg-white/[0.04] hover:border-white/20 transition-all duration-300">
+              <div className="w-full bg-white/[0.02] border border-white/10 rounded-3xl p-6 md:p-8 hover:bg-white/[0.04] hover:border-white/20 transition-all duration-300 h-full">
                 <h3 className="text-lg font-bold text-white mb-4">Sobre Mim</h3>
-                <div className="space-y-3 text-sm text-white/70 leading-relaxed">
-                  <p>
+                <div className="space-y-3 text-sm text-white/70 leading-relaxed max-w-full">
+                  <p className="break-words">
                     Tenho 25 anos e sou desenvolvedor front-end brasileiro vivendo em Portugal há 3 anos. Minha jornada na tecnologia começou com curiosidade e evoluiu para uma paixão genuína por criar experiências digitais excepcionais.
                   </p>
-                  <p>
+                  <p className="break-words">
                     Especializo-me em desenvolvimento moderno com Next.js, TypeScript e Tailwind CSS, sempre buscando as melhores práticas do ecossistema React. Meu objetivo é construir uma carreira sólida, contribuindo para projetos que combinem inovação tecnológica com impacto real.
                   </p>
                 </div>
@@ -672,77 +672,71 @@ export default function Home() {
 
             {/* Career Journey Card - Horizontal Timeline */}
             <div className="reveal-element lg:col-span-7 flex items-end">
-              <div className="w-full bg-white/[0.02] border border-white/10 rounded-3xl p-5 md:p-6 hover:bg-white/[0.04] hover:border-white/20 transition-all duration-300">
-                <h3 className="text-base font-bold text-white mb-3">Trajetória Profissional</h3>
-                <div className="relative">
-                  {/* Horizontal Timeline Line */}
-                  <div className="absolute top-[7px] left-2 right-2 h-[2px] bg-gradient-to-r from-purple-500/50 via-blue-500/50 to-purple-500"></div>
+              <div className="w-full bg-white/[0.02] border border-white/10 rounded-3xl p-4 md:p-5 hover:bg-white/[0.04] hover:border-white/20 transition-all duration-300">
+                <h3 className="text-sm font-bold text-white mb-3">Trajetória Profissional</h3>
+                <div className="grid grid-cols-4 gap-2">
+                  <div className="flex flex-col items-center">
+                    <p className="text-[10px] text-purple-400 font-medium text-center">NOS</p>
+                    <p className="text-[8px] text-white/50 text-center mb-1">2021</p>
+                    <p className="text-[9px] text-white/70 text-center leading-tight">Apoio Técnico</p>
+                  </div>
 
-                  {/* Timeline Items */}
-                  <div className="flex justify-between items-start pt-5">
-                    <div className="flex flex-col items-center gap-1.5 flex-1">
-                      <div className="w-4 h-4 rounded-full bg-white/10 border-2 border-purple-500/50 -mt-[27px]"></div>
-                      <p className="text-[9px] text-purple-400 font-medium text-center">NOS</p>
-                      <p className="text-[8px] text-white/50 text-center">2021</p>
-                      <p className="text-[9px] text-white/70 text-center leading-tight">Apoio Técnico</p>
-                    </div>
+                  <div className="flex flex-col items-center">
+                    <p className="text-[10px] text-blue-400 font-medium text-center">Crunch</p>
+                    <p className="text-[8px] text-white/50 text-center mb-1">2022</p>
+                    <p className="text-[9px] text-white/70 text-center leading-tight">CS Linha 1</p>
+                  </div>
 
-                    <div className="flex flex-col items-center gap-1.5 flex-1">
-                      <div className="w-4 h-4 rounded-full bg-white/10 border-2 border-blue-500/50 -mt-[27px]"></div>
-                      <p className="text-[9px] text-blue-400 font-medium text-center">Crunch</p>
-                      <p className="text-[8px] text-white/50 text-center">2022</p>
-                      <p className="text-[9px] text-white/70 text-center leading-tight">Apoio Cliente 1ª</p>
-                    </div>
+                  <div className="flex flex-col items-center">
+                    <p className="text-[10px] text-blue-400 font-medium text-center">Crunch</p>
+                    <p className="text-[8px] text-white/50 text-center mb-1">2023</p>
+                    <p className="text-[9px] text-white/70 text-center leading-tight">Analista Linha 2 B2B</p>
+                  </div>
 
-                    <div className="flex flex-col items-center gap-1.5 flex-1">
-                      <div className="w-4 h-4 rounded-full bg-white/10 border-2 border-blue-500/50 -mt-[27px]"></div>
-                      <p className="text-[9px] text-blue-400 font-medium text-center">Crunch</p>
-                      <p className="text-[8px] text-white/50 text-center">2023</p>
-                      <p className="text-[9px] text-white/70 text-center leading-tight">Analista 2ª B2B</p>
-                    </div>
-
-                    <div className="flex flex-col items-center gap-1.5 flex-1">
-                      <div className="w-4 h-4 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 border-2 border-purple-400 shadow-lg shadow-purple-500/50 -mt-[27px]"></div>
-                      <p className="text-[9px] text-purple-400 font-bold text-center">Crunch</p>
-                      <p className="text-[8px] text-white/50 text-center">Atual</p>
-                      <p className="text-[9px] text-white text-center leading-tight">Web & Data</p>
-                    </div>
+                  <div className="flex flex-col items-center">
+                    <p className="text-[10px] text-purple-400 font-bold text-center">Crunch</p>
+                    <p className="text-[8px] text-white/50 text-center mb-1">Atual</p>
+                    <p className="text-[9px] text-white/70 text-center leading-tight">Web & Data Specialist</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Stats Cards - Each takes 2 columns (total 6 for 3 cards = half width) */}
-            <div className="reveal-element lg:col-span-2">
-              <div className="aspect-square bg-gradient-to-br from-purple-600/10 to-blue-600/10 border border-purple-500/20 rounded-3xl p-4 hover:border-purple-500/40 transition-all duration-300 flex flex-col items-center justify-center text-center">
-                <div className="text-3xl md:text-4xl font-bold text-white mb-1">
-                  <CountUp end={20} suffix="+" />
+            {/* Stats and Stack Row - Mobile: separate cards, Desktop: grid */}
+            <div className="reveal-element lg:col-span-12 grid grid-cols-3 lg:grid-cols-12 gap-4">
+              {/* Stat 1 */}
+              <div className="lg:col-span-2">
+                <div className="aspect-square bg-gradient-to-br from-purple-600/10 to-blue-600/10 border border-purple-500/20 rounded-3xl p-4 hover:border-purple-500/40 transition-all duration-300 flex flex-col items-center justify-center text-center">
+                  <div className="text-3xl md:text-4xl font-bold text-white mb-1">
+                    <CountUp end={20} suffix="+" />
+                  </div>
+                  <div className="text-[10px] text-white/60 uppercase tracking-wider">Projetos</div>
                 </div>
-                <div className="text-[10px] text-white/60 uppercase tracking-wider">Projetos</div>
               </div>
-            </div>
 
-            <div className="reveal-element lg:col-span-2">
-              <div className="aspect-square bg-gradient-to-br from-blue-600/10 to-purple-600/10 border border-blue-500/20 rounded-3xl p-4 hover:border-blue-500/40 transition-all duration-300 flex flex-col items-center justify-center text-center">
-                <div className="text-3xl md:text-4xl font-bold text-white mb-1">
-                  <CountUp end={3} suffix="+" />
+              {/* Stat 2 */}
+              <div className="lg:col-span-2">
+                <div className="aspect-square bg-gradient-to-br from-blue-600/10 to-purple-600/10 border border-blue-500/20 rounded-3xl p-4 hover:border-blue-500/40 transition-all duration-300 flex flex-col items-center justify-center text-center">
+                  <div className="text-3xl md:text-4xl font-bold text-white mb-1">
+                    <CountUp end={3} suffix="+" />
+                  </div>
+                  <div className="text-[10px] text-white/60 uppercase tracking-wider">Anos</div>
                 </div>
-                <div className="text-[10px] text-white/60 uppercase tracking-wider">Anos</div>
               </div>
-            </div>
 
-            <div className="reveal-element lg:col-span-2">
-              <div className="aspect-square bg-gradient-to-br from-purple-600/10 to-pink-600/10 border border-purple-500/20 rounded-3xl p-4 hover:border-purple-500/40 transition-all duration-300 flex flex-col items-center justify-center text-center">
-                <div className="text-3xl md:text-4xl font-bold text-white mb-1">
-                  <CountUp end={100} suffix="%" />
+              {/* Stat 3 */}
+              <div className="lg:col-span-2">
+                <div className="aspect-square bg-gradient-to-br from-purple-600/10 to-pink-600/10 border border-purple-500/20 rounded-3xl p-4 hover:border-purple-500/40 transition-all duration-300 flex flex-col items-center justify-center text-center">
+                  <div className="text-3xl md:text-4xl font-bold text-white mb-1">
+                    <CountUp end={100} suffix="%" />
+                  </div>
+                  <div className="text-[10px] text-white/60 uppercase tracking-wider">Dedicação</div>
                 </div>
-                <div className="text-[10px] text-white/60 uppercase tracking-wider">Dedicação</div>
               </div>
-            </div>
 
-            {/* Tech Stack Card - Takes remaining 6 columns (half width) */}
-            <div className="reveal-element lg:col-span-6">
-              <div className="h-full bg-white/[0.02] border border-white/10 rounded-3xl p-4 hover:bg-white/[0.04] hover:border-white/20 transition-all duration-300 flex flex-col justify-center">
+              {/* Tech Stack Card */}
+              <div className="col-span-3 lg:col-span-6">
+                <div className="h-full bg-white/[0.02] border border-white/10 rounded-3xl p-4 hover:bg-white/[0.04] hover:border-white/20 transition-all duration-300 flex flex-col justify-center">
                 <h3 className="text-sm font-bold text-white mb-3">Stack Preferida</h3>
                 <div className="grid grid-cols-3 lg:grid-cols-5 gap-3">
                   <div className="flex flex-col items-center gap-1.5">
@@ -775,6 +769,7 @@ export default function Home() {
                     </div>
                     <span className="text-[9px] text-white/70 text-center">Vercel</span>
                   </div>
+                </div>
                 </div>
               </div>
             </div>
